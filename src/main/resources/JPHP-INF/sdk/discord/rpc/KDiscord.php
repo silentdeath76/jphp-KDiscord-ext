@@ -23,7 +23,7 @@ class KDiscord {
     {
     }
 
-    public function updateState (): void
+    public function updateActivity (): void
     {
     }
 
@@ -39,11 +39,11 @@ class KDiscord {
     {
     }
 
-    public function setLargeImage (String $key, String $hint): void
+    public function setLargeImage (String $key, String $hint = null): void
     {
     }
 
-    public function setSmallImage (String $key, String $hint): void
+    public function setSmallImage (String $key, String $hint = null): void
     {
     }
 

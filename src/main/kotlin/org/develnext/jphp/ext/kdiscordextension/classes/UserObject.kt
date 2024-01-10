@@ -1,9 +1,7 @@
 package org.develnext.jphp.ext.kdiscordextension.classes
 
 import dev.cbyrne.kdiscordipc.data.user.User
-import javafx.util.Pair
 import org.develnext.jphp.ext.kdiscordextension.KDiscordExtension
-import php.runtime.Memory
 import php.runtime.annotation.Reflection
 import php.runtime.annotation.Reflection.Property
 import php.runtime.env.Environment
@@ -13,34 +11,21 @@ import php.runtime.reflection.ClassEntity
 @Reflection.Name("User")
 @Reflection.Namespace(KDiscordExtension.NS)
 class UserObject(env: Environment?, clazz: ClassEntity? = null) : BaseObject(env, clazz) {
-    @Property
+    var flags: Int = 0
     var premiumType: Int = 0
-
-    @Property
     var premiumTier: Int = 0
-
-    @Property
     var premiumName: String = ""
-
-    @Property
     var bot: Boolean = false
-
-    @Property
     var discriminator: String = ""
-
-    @Property
     var avatar: String = ""
-
-    @Property
     var id: String = ""
-
-    @Property
     var username: String = "";
 
     fun init(user: User) {
         this.username = user.username;
         this.id = user.id;
         this.avatar = user.avatar!!
+        this.flags = user.flags!!
         this.discriminator = user.discriminator;
         this.bot = user.bot == true
         if (user.premiumType != null) {
@@ -55,6 +40,7 @@ class UserObject(env: Environment?, clazz: ClassEntity? = null) : BaseObject(env
             this.username,
             this.id,
             this.avatar,
+            this.flags,
             this.discriminator,
             this.bot,
             this.premiumName,

@@ -22,38 +22,27 @@ class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, c
         @Signature
         @Name("setDetails")
         set(value) {
-            if (value!!.length < 2) {
-                activity.details = null
-                field = null
-            } else {
-                activity.details = value
-                field = value
-            }
+            activity.details = if (value!!.length < 2) null else value
+            field = activity.details
         }
     var state: String? = null
         @Signature
         @Name("setState")
         set(value) {
-            if (value!!.length < 2) {
-                activity.state = null
-                field = null
-            } else {
-                activity.state = value
-                field = value
-            }
+            activity.state = if (value!!.length < 2) null else value
+            field = activity.state
         }
-    var startTimestamp: Long = System.currentTimeMillis()
+    var startTimestamp: Long? = System.currentTimeMillis()
         @Signature
         @Name("setStartTimestamp")
         set(value) {
-            if (value < 0) return;
-            field = value
+            field = if (value!! <= 0) null else value
         }
-    var endTimestamp: Long = 0L
+    var endTimestamp: Long? = 0L
         @Signature
         @Name("setEndTimestamp")
         set(value) {
-            if (value > startTimestamp) field = value
+            field = if (value!! > startTimestamp!!) value else null
         }
 
     private val largeImage = mutableListOf("", null)
@@ -110,7 +99,6 @@ class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, c
             GlobalScope.launch {
                 ipc.connect()
             }
-            Thread.sleep(10)
         }
     }
 
@@ -119,9 +107,9 @@ class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, c
     private fun updateActivity() {
         activity.details = details
         activity.state = state
-        activity.timestamps = Activity.Timestamps(startTimestamp, null)
+        activity.timestamps = Activity.Timestamps(startTimestamp!!, null)
 
-        if (endTimestamp > System.currentTimeMillis()) {
+        if (endTimestamp!! > System.currentTimeMillis()) {
             activity.timestamps = Activity.Timestamps(System.currentTimeMillis(), endTimestamp)
         }
 
@@ -130,7 +118,7 @@ class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, c
         if (largeImage.get(0)?.isNotEmpty() == true) {
             activity.assets!!.largeImage = largeImage[0]
 
-            if (largeImage[1]?.length!! > 2 && largeImage[1]?.length!! > 2) {
+            if (largeImage[1] == null || largeImage[1]?.length!! > 2) {
                 activity.assets!!.largeText = largeImage[1]
             } else {
                 activity.assets!!.largeText = null
@@ -140,10 +128,10 @@ class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, c
         if (smallImage.get(0)?.isNotEmpty() == true) {
             activity.assets!!.smallImage = smallImage[0]
 
-            if (smallImage[0]?.length!! > 0 && smallImage[1]?.length!! > 2) {
+            if (smallImage[1] == null || smallImage[1]!!.length!! > 2) {
                 activity.assets!!.smallText = smallImage[1]
             } else {
-                activity.assets!!.largeText = null
+                activity.assets!!.smallText = null
             }
         }
 
@@ -154,6 +142,7 @@ class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, c
 
     @DelicateCoroutinesApi
     @Signature
+    @Name("updateActivity")
     fun updateState() {
         GlobalScope.launch {
             updateActivity() // all broken
@@ -197,13 +186,25 @@ class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, c
 
 
     @Signature
-    fun setLargeImage(key: String, hint: String) {
+    fun setLargeImage(key: String) {
+        largeImage[0] = key
+        largeImage[1] = null
+    }
+
+    @Signature
+    fun setLargeImage(key: String, hint: String?) {
         largeImage[0] = key
         largeImage[1] = hint
     }
 
     @Signature
-    fun setSmallImage(key: String, hint: String) {
+    fun setSmallImage(key: String) {
+        smallImage[0] = key
+        smallImage[1] = null
+    }
+
+    @Signature
+    fun setSmallImage(key: String, hint: String?) {
         smallImage[0] = key
         smallImage[1] = hint
     }
