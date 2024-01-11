@@ -1,6 +1,7 @@
 package org.develnext.jphp.ext.kdiscordextension.classes
 
 import dev.cbyrne.kdiscordipc.KDiscordIPC
+import dev.cbyrne.kdiscordipc.core.event.DiscordEvent
 import dev.cbyrne.kdiscordipc.core.event.impl.*
 import dev.cbyrne.kdiscordipc.data.activity.Activity
 import kotlinx.coroutines.*
@@ -70,6 +71,12 @@ class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, c
                     user.init(data.user)
                     eventMap[Events.READY.toString().lowercase()]!!.callAny(user.toArray())
                 }
+
+                ipc.subscribe(DiscordEvent.CurrentUserUpdate)
+                ipc.subscribe(DiscordEvent.ActivityJoinRequest)
+                ipc.subscribe(DiscordEvent.ActivityJoin)
+                ipc.subscribe(DiscordEvent.ActivityInvite)
+                ipc.subscribe(DiscordEvent.ActivitySpectate)
             }
 
             ipc.on<DisconnectedEvent> {
@@ -217,6 +224,40 @@ class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, c
     fun disconnect() {
         isManuallyDisconnect = true
         if (ipc.connected) ipc.disconnect();
+    }
+
+
+    @Signature
+    fun setParty(id: String, size: Int, max: Int) {
+        activity.party = Activity.Party(id, Activity.Party.PartySize(size, max))
+    }
+
+    @DelicateCoroutinesApi
+    @Signature
+    fun setSecrets(join: String, match: String, spectate: String) {
+        removeButton(1);
+        removeButton(0);
+        activity.secrets = Activity.Secrets(join, match, spectate)
+
+        GlobalScope.launch {
+            ipc.on<ActivityJoinEvent> {
+                println("The user has joined someone else's party! ${data.secret}") // todo remove me
+
+                if (eventMap[Events.ACTIVITY_JOIN.toString().lowercase()] is Invoker) {
+                    eventMap[Events.ACTIVITY_JOIN.toString().lowercase()]!!.callAny(data.secret)
+                }
+            }
+
+            ipc.on<ActivityInviteEvent> {
+                println("We have been invited to join ${data.user.username}'s party! (${data.activity.party.id})") // todo remove me
+
+                if (eventMap[Events.ACTIVITY_INVITE.toString().lowercase()] is Invoker) {
+                    if (eventMap[Events.ACTIVITY_INVITE.toString().lowercase()]!!.callAny(data.activity.party.id).toBoolean()) {
+                        ipc.activityManager.acceptInvite(data)
+                    }
+                }
+            }
+        }
     }
 
 

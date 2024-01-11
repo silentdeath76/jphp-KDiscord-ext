@@ -62,6 +62,16 @@ class KDiscord {
         $this->instance->setSmallImage($key, $hint);
     }
 
+    public function setParty ($id, $size, $max): void
+    {
+        $this->instance->setParty(id, $size, $max);
+    }
+
+    public function setSecrets ($join, $match, $spectate): void
+    {
+        $this->instance->setSecrets($join, $match, $spectate);
+    }
+
     public function disconnect (): void
     {
         $this->instance->disconnect();
@@ -73,7 +83,6 @@ class KDiscord {
             $args = func_get_args();
 
             if (is_array($args[0]) && ($event == KDiscordTypes::EVENT_READY || $event == KDiscordTypes::EVENT_CURRENT_USER_UPDATE)) {
-                $args[1] = $args[0]; // todo remove it
                 $args[0] = UserObject::ofArray($args[0]);
             }
 
