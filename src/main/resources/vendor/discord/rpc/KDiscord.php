@@ -1,6 +1,7 @@
 <?php
+namespace discord\rpc;
 
-use app, discord;
+use discord;
 
 class KDiscord {
 
@@ -61,14 +62,24 @@ class KDiscord {
         $this->instance->setSmallImage($key, $hint);
     }
 
+    public function disconnect (): void
+    {
+        $this->instance->disconnect();
+    }
+
     public function on ($event, $callback): void
     {
-        $this->instance->on($event, function () use ($callback) {
+        $this->instance->on($event, function () use ($callback, $event) {
             $args = func_get_args();
+
+            if (is_array($args[0]) && ($event == KDiscordTypes::EVENT_READY || $event == KDiscordTypes::EVENT_CURRENT_USER_UPDATE)) {
+                $args[1] = $args[0]; // todo remove it
+                $args[0] = UserObject::ofArray($args[0]);
+            }
+
             uiLater(function () use ($callback, $args) {
                 call_user_func_array($callback, $args);
             });
-
         });
     }
 }

@@ -16,6 +16,7 @@ import java.util.logging.Logger
 @Name("__KDiscord")
 @Namespace(KDiscordExtension.NS)
 class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, clazz) {
+    private var isManuallyDisconnect: Boolean = false
     private var ipc: KDiscordIPC = KDiscordIPC("0")
 
     var details: String? = null
@@ -73,8 +74,10 @@ class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, c
 
             ipc.on<DisconnectedEvent> {
                 GlobalScope.launch {
-                    Thread.sleep(1000L)
-                    ipc.connect();
+                    if (!isManuallyDisconnect) {
+                        Thread.sleep(1000L)
+                        ipc.connect();
+                    }
                 }
 
                 if (eventMap[Events.DISCONNECTED.toString().lowercase()] is Invoker) {
@@ -128,7 +131,7 @@ class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, c
         if (smallImage.get(0)?.isNotEmpty() == true) {
             activity.assets!!.smallImage = smallImage[0]
 
-            if (smallImage[1] == null || smallImage[1]!!.length!! > 2) {
+            if (smallImage[1] == null || smallImage[1]!!.length > 2) {
                 activity.assets!!.smallText = smallImage[1]
             } else {
                 activity.assets!!.smallText = null
@@ -211,6 +214,13 @@ class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, c
 
 
     @Signature
+    fun disconnect() {
+        isManuallyDisconnect = true
+        if (ipc.connected) ipc.disconnect();
+    }
+
+
+    @Signature
     fun on(event: String, callback: Invoker) {
         eventMap[event.lowercase()] = callback
     }
@@ -218,7 +228,7 @@ class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, c
 
     @Signature
     fun __destruct() {
-        if (ipc.connected) ipc.disconnect();
+        disconnect()
     }
 
     private enum class Events {
