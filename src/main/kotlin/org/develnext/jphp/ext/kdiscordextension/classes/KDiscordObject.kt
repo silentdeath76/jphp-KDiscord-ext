@@ -13,7 +13,7 @@ import php.runtime.reflection.ClassEntity
 import java.util.logging.Level
 import java.util.logging.Logger
 
-@Name("KDiscord")
+@Name("__KDiscord")
 @Namespace(KDiscordExtension.NS)
 class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, clazz) {
     private var ipc: KDiscordIPC = KDiscordIPC("0")
