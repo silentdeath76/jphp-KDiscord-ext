@@ -1,7 +1,6 @@
 package org.develnext.jphp.ext.kdiscordextension
 
-import org.develnext.jphp.ext.kdiscordextension.classes.KDiscordObject
-import org.develnext.jphp.ext.kdiscordextension.classes.UserObject
+import org.develnext.jphp.ext.kdiscordextension.classes.*
 import php.runtime.env.CompileScope
 import php.runtime.ext.support.Extension
 
@@ -11,7 +10,7 @@ class KDiscordExtension : Extension() {
     }
 
     override fun getStatus(): Status {
-        return Status.EXPERIMENTAL;
+        return Status.STABLE;
     }
 
     override fun getPackageNames(): Array<String> {
@@ -22,5 +21,4 @@ class KDiscordExtension : Extension() {
         registerClass(p0, KDiscordObject::class.java)
         registerClass(p0, UserObject::class.java)
     }
-
 }

@@ -72,6 +72,11 @@ class KDiscord {
         $this->instance->setSecrets($join, $match, $spectate);
     }
 
+    public function connect (): void
+    {
+        $this->instance->connect();
+    }
+
     public function disconnect (): void
     {
         $this->instance->disconnect();

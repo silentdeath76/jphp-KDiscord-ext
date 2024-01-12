@@ -14,6 +14,7 @@ import php.runtime.reflection.ClassEntity
 import java.util.logging.Level
 import java.util.logging.Logger
 
+@Suppress("FunctionName")
 @Name("__KDiscord")
 @Namespace(KDiscordExtension.NS)
 class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, clazz) {
@@ -106,9 +107,7 @@ class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, c
                 }
             }
 
-            GlobalScope.launch {
-                ipc.connect()
-            }
+            connect()
         }
     }
 
@@ -219,6 +218,13 @@ class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, c
         smallImage[1] = hint
     }
 
+    @DelicateCoroutinesApi
+    @Signature
+    fun connect () {
+        GlobalScope.launch {
+            ipc.connect()
+        }
+    }
 
     @Signature
     fun disconnect() {
