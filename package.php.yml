@@ -1,0 +1,37 @@
+name: jphp-KDiscord-ext
+version: 1.0.0
+
+devDeps:
+  jphp-runtime: '*'
+
+plugins:
+  - Doc
+  - Gradle
+
+sources:
+  - src-php
+
+gradle:
+  deps:
+    - 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0-RC2'
+    - 'com.github.caoimhebyrne:KDiscordIPC:0.2.2'
+  providedDeps:
+    - file:./vendor/jphp-runtime/jars/jphp-runtime-1.0.3.jar
+
+config:
+  ignore:
+    - /sandbox/**
+    - /.idea/**
+    - /*.iml
+    - /.git/**
+    - /examples/**
+    - /package.hub.yml
+    - /bundle/**
+    - build
+    - out
+    - target
+    - pom.xml
+    - /src-bundle/**
+    - /README.MD
+    - /.gitignore
+    - .gradle
