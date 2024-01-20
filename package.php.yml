@@ -1,5 +1,5 @@
 name: jphp-KDiscord-ext
-version: 1.0.0
+version: 1.0.1
 
 devDeps:
   jphp-runtime: '*'
