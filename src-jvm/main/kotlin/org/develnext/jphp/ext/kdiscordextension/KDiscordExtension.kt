@@ -18,7 +18,6 @@ class KDiscordExtension : Extension() {
     }
 
     override fun onRegister(p0: CompileScope?) {
-        println("Extension is registered");
         registerClass(p0, KDiscordObject::class.java)
         registerClass(p0, UserObject::class.java)
     }
