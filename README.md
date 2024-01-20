@@ -29,7 +29,7 @@ $ipc->addButton("Best video on planet", "https://youtu.be/dQw4w9WgXcQ");
 ```
 <br>
 
-##### Как менять уже заданные парраметры?
+##### Как менять уже заданные параметры?
 Все просто, меняете и вызваете метод `updateActivity()`
 
 ```php
