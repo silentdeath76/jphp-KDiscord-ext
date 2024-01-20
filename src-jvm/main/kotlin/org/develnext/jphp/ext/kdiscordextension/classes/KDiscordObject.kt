@@ -22,30 +22,22 @@ class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, c
     private var ipc: KDiscordIPC = KDiscordIPC("0")
 
     var details: String? = null
-        @Signature
-        @Name("setDetails")
-        set(value) {
+        @Signature @Name("setDetails") set(value) {
             activity.details = if (value!!.length < 2) null else value
             field = activity.details
         }
     var state: String? = null
-        @Signature
-        @Name("setState")
-        set(value) {
+        @Signature @Name("setState") set(value) {
             activity.state = if (value!!.length < 2) null else value
             field = activity.state
         }
     var startTimestamp: Long? = System.currentTimeMillis()
-        @Signature
-        @Name("setStartTimestamp")
-        set(value) {
+        @Signature @Name("setStartTimestamp") set(value) {
             field = if (value!! <= 0) null else value
         }
     var endTimestamp: Long? = 0L
-        @Signature
-        @Name("setEndTimestamp")
-        set(value) {
-            field = if (value!! > startTimestamp!!) value else null
+        @Signature @Name("setEndTimestamp") set(value) {
+            field = value
         }
 
     private val largeImage = mutableListOf("", null)
@@ -220,7 +212,7 @@ class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, c
 
     @DelicateCoroutinesApi
     @Signature
-    fun connect () {
+    fun connect() {
         GlobalScope.launch {
             ipc.connect()
         }
@@ -247,7 +239,7 @@ class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, c
 
         GlobalScope.launch {
             ipc.on<ActivityJoinEvent> {
-                println("The user has joined someone else's party! ${data.secret}") // todo remove me
+                //println("The user has joined someone else's party! ${data.secret}")
 
                 if (eventMap[Events.ACTIVITY_JOIN.toString().lowercase()] is Invoker) {
                     eventMap[Events.ACTIVITY_JOIN.toString().lowercase()]!!.callAny(data.secret)
@@ -255,7 +247,7 @@ class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, c
             }
 
             ipc.on<ActivityInviteEvent> {
-                println("We have been invited to join ${data.user.username}'s party! (${data.activity.party.id})") // todo remove me
+                //println("We have been invited to join ${data.user.username}'s party! (${data.activity.party.id})")
 
                 if (eventMap[Events.ACTIVITY_INVITE.toString().lowercase()] is Invoker) {
                     if (eventMap[Events.ACTIVITY_INVITE.toString().lowercase()]!!.callAny(data.activity.party.id).toBoolean()) {
@@ -279,11 +271,6 @@ class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, c
     }
 
     private enum class Events {
-        DISCONNECTED,
-        ERROR,
-        CURRENT_USER_UPDATE,
-        ACTIVITY_JOIN,
-        ACTIVITY_INVITE,
-        READY;
+        DISCONNECTED, ERROR, CURRENT_USER_UPDATE, ACTIVITY_JOIN, ACTIVITY_INVITE, READY;
     }
 }

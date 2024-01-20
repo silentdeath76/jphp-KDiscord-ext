@@ -15,15 +15,16 @@ repositories {
 
 sourceSets.getByName("main") {
     java.srcDir("src-jvm/main/kotlin")
+    resources.srcDir("src-jvm/main/resources")
 }
 sourceSets.getByName("test") {
     java.srcDir("src-jvm/test/java")
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0-RC2")
-    implementation(files("C:\\Program Files (x86)\\DevelNext\\lib\\jphp-runtime.jar"))
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     implementation("com.github.caoimhebyrne:KDiscordIPC:0.2.2")
+    implementation(files("C:\\Program Files (x86)\\DevelNext\\lib\\jphp-runtime.jar"))
 }
 
 tasks.withType<KotlinCompile>() {
