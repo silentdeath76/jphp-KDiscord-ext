@@ -1,6 +1,7 @@
 package org.develnext.jphp.ext.kdiscordextension.classes
 
 import dev.cbyrne.kdiscordipc.KDiscordIPC
+import dev.cbyrne.kdiscordipc.core.error.ConnectionError.NotConnected
 import dev.cbyrne.kdiscordipc.core.event.DiscordEvent
 import dev.cbyrne.kdiscordipc.core.event.impl.*
 import dev.cbyrne.kdiscordipc.data.activity.Activity
@@ -11,8 +12,6 @@ import php.runtime.env.Environment
 import php.runtime.invoke.Invoker
 import php.runtime.lang.BaseObject
 import php.runtime.reflection.ClassEntity
-import java.util.logging.Level
-import java.util.logging.Logger
 
 @Suppress("FunctionName")
 @Name("__KDiscord")
@@ -49,10 +48,8 @@ class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, c
     @DelicateCoroutinesApi
     @Signature
     fun __construct(clientID: String) {
-        Logger.getLogger("KDiscordIPC").level = Level.OFF;
 
         ipc = KDiscordIPC(clientID)
-
         GlobalScope.launch {
             val user = UserObject(__env__);
 
@@ -73,11 +70,15 @@ class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, c
             }
 
             ipc.on<DisconnectedEvent> {
-                GlobalScope.launch {
-                    if (!isManuallyDisconnect) {
-                        Thread.sleep(1000L)
-                        ipc.connect();
+                try {
+                    coroutineScope {
+                        if (!isManuallyDisconnect) {
+                            Thread.sleep(1000L)
+                            connect()
+                        }
                     }
+                } catch (e: Exception) {
+                    println("ERROR: ${e.message}")
                 }
 
                 if (eventMap[Events.DISCONNECTED.toString().lowercase()] is Invoker) {
@@ -145,10 +146,27 @@ class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, c
     @Signature
     @Name("updateActivity")
     fun updateState() {
-        GlobalScope.launch {
-            updateActivity() // all broken
-            ipc.activityManager.clearActivity()
-            ipc.activityManager.setActivity(activity)
+        val handler = CoroutineExceptionHandler { _, throwable ->
+            println(throwable.message)
+        }
+
+        try {
+            GlobalScope.launch (handler) {
+                try {
+                    ipc.activityManager.clearActivity()
+                    updateActivity()
+                } catch (e: Exception) {
+                    println(e.message)
+                } catch (e: Error) {
+                    println(e.message)
+                } catch (e: NotConnected) {
+                    println(e.message)
+                } finally {
+                }
+                ipc.activityManager.setActivity(activity)
+            }
+        } catch (e: NotConnected) {
+            println(e.message)
         }
     }
 
@@ -213,8 +231,21 @@ class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, c
     @DelicateCoroutinesApi
     @Signature
     fun connect() {
-        GlobalScope.launch {
-            ipc.connect()
+        val handler = CoroutineExceptionHandler { _, throwable ->
+            println(throwable.message)
+        }
+
+        GlobalScope.launch(handler) {
+            try {
+                ipc.connect()
+            } catch (e: Exception) {
+                println(e.message)
+            } catch (e: Error) {
+                println(e.message)
+            } catch (e: NotConnected) {
+                println(e.message)
+            } finally {
+            }
         }
     }
 
