@@ -43,7 +43,7 @@ class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, c
     private val smallImage = mutableListOf("", null)
     private val eventMap = mutableMapOf<String, Invoker>()
 
-    private val activity: Activity = Activity();
+    private val activity: Activity = Activity()
 
     @DelicateCoroutinesApi
     @Signature
@@ -51,7 +51,7 @@ class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, c
 
         ipc = KDiscordIPC(clientID)
         GlobalScope.launch {
-            val user = UserObject(__env__);
+            val user = UserObject(__env__)
 
             ipc.on<ReadyEvent> {
                 updateActivity()
@@ -174,8 +174,8 @@ class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, c
     @Signature
     fun addButton(text: String, url: String) {
         if (activity.buttons == null) {
-            activity.buttons = mutableListOf(Activity.Button(text, url));
-            return;
+            activity.buttons = mutableListOf(Activity.Button(text, url))
+            return
         }
 
         if (activity.buttons!!.size >= 2) {
@@ -187,7 +187,7 @@ class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, c
 
     @Signature
     fun changeButton(index: Int, text: String, url: String) {
-        if (activity.buttons == null || index > activity.buttons!!.size - 1) return;
+        if (activity.buttons == null || index > activity.buttons!!.size - 1) return
 
         val button = activity.buttons!![index]
         button.label = text
@@ -196,7 +196,7 @@ class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, c
 
     @Signature
     fun removeButton(index: Int = 0) {
-        if (activity.buttons == null || index > activity.buttons!!.size - 1) return;
+        if (activity.buttons == null || index > activity.buttons!!.size - 1) return
 
         activity.buttons!!.removeAt(index)
 
@@ -252,7 +252,7 @@ class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, c
     @Signature
     fun disconnect() {
         isManuallyDisconnect = true
-        if (ipc.connected) ipc.disconnect();
+        if (ipc.connected) ipc.disconnect()
     }
 
 
@@ -264,8 +264,8 @@ class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, c
     @DelicateCoroutinesApi
     @Signature
     fun setSecrets(join: String, match: String, spectate: String) {
-        removeButton(1);
-        removeButton(0);
+        removeButton(1)
+        removeButton(0)
         activity.secrets = Activity.Secrets(join, match, spectate)
 
         GlobalScope.launch {
