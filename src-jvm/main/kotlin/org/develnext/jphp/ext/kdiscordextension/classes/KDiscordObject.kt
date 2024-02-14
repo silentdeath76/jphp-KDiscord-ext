@@ -39,8 +39,8 @@ class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, c
             field = value
         }
 
-    private val largeImage = mutableListOf("", null)
-    private val smallImage = mutableListOf("", null)
+    private val largeImage: MutableList<String?> = mutableListOf("", null)
+    private val smallImage: MutableList<String?> = mutableListOf("", null)
     private val eventMap = mutableMapOf<String, Invoker>()
 
     private val activity: Activity = Activity()
@@ -117,24 +117,16 @@ class KDiscordObject(env: Environment?, clazz: ClassEntity?) : BaseObject(env, c
 
         activity.assets = Activity.Assets()
 
-        if (largeImage.get(0)?.isNotEmpty() == true) {
+        if (largeImage[0]?.isNotEmpty() == true) {
             activity.assets!!.largeImage = largeImage[0]
-
-            if (largeImage[1] == null || largeImage[1]?.length!! > 2) {
-                activity.assets!!.largeText = largeImage[1]
-            } else {
-                activity.assets!!.largeText = null
-            }
+            activity.assets!!.largeText =
+                if (largeImage[1] == null || largeImage[1]?.length!! > 2) largeImage[1] else null
         }
 
-        if (smallImage.get(0)?.isNotEmpty() == true) {
+        if (smallImage[0]?.isNotEmpty() == true) {
             activity.assets!!.smallImage = smallImage[0]
-
-            if (smallImage[1] == null || smallImage[1]!!.length > 2) {
-                activity.assets!!.smallText = smallImage[1]
-            } else {
-                activity.assets!!.smallText = null
-            }
+            activity.assets!!.smallText =
+                if (smallImage[1] == null || smallImage[1]?.length!! > 2) smallImage[1] else null
         }
 
         GlobalScope.launch {
